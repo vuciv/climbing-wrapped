@@ -443,21 +443,124 @@ function ClimbingWrapped() {
           </AnimatedStat>
         </motion.div>
       </FullscreenSection>
+
+      {/* Crag Dedication Section */}
+      <FullscreenSection
+        gradient="linear-gradient(135deg, #2d1f3d 0%, #1a1a1a 100%)"
+      >
+        <Title>Your Crag Story</Title>
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+        >
+          <Tagline>Your favorite playground was...</Tagline>
+          <BigStat
+            initial={{ scale: 0.5, opacity: 0 }}
+            whileInView={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.5, duration: 0.8 }}
+          >
+            {stats.yearComparison.thisYear.topAreas[0].area}
+          </BigStat>
+          <Tagline>with {stats.yearComparison.thisYear.topAreas[0].count} epic sessions! 🏔️</Tagline>
+        </motion.div>
+      </FullscreenSection>
+
+      {/* Send Style Reveal */}
+      <FullscreenSection
+        gradient="linear-gradient(135deg, #1a1a1a 0%, #2d1f3d 100%)"
+      >
+        <Title>Your Sending Style</Title>
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+        >
+          <AnimatedStat variants={statVariants}>
+            You're an
+            <Emphasis>
+              {' '}
+              {stats.yearComparison.thisYear.sendTypes.onsight > stats.yearComparison.thisYear.sendTypes.redpoint
+                ? 'Onsight Machine'
+                : 'Project Crusher'}
+            </Emphasis>
+          </AnimatedStat>
+          
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            whileInView={{ height: 'auto', opacity: 1 }}
+            transition={{ delay: 0.5, duration: 0.8 }}
+          >
+            <Stat>
+              <div>🎯 {stats.yearComparison.thisYear.sendTypes.onsight} Onsights</div>
+              <div>⚡ {stats.yearComparison.thisYear.sendTypes.flash} Flashes</div>
+              <div>💪 {stats.yearComparison.thisYear.sendTypes.redpoint} Redpoints</div>
+              <div>🔄 {stats.yearComparison.thisYear.sendTypes.topRope} Top Ropes</div>
+            </Stat>
+          </motion.div>
+        </motion.div>
+      </FullscreenSection>
+
+      {/* Volume Stats */}
+      <FullscreenSection
+        gradient="linear-gradient(135deg, #2d1f3d 0%, #1a1a1a 100%)"
+      >
+        <Title>The Numbers Don't Lie</Title>
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+        >
+          <BigStat
+            initial={{ scale: 0.5, opacity: 0 }}
+            whileInView={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.5, duration: 0.8 }}
+          >
+            {stats.yearComparison.thisYear.climbingSessions}
+          </BigStat>
+          <Tagline>Days on the wall</Tagline>
+          
+          <ComparisonStat
+            isPositive={true}
+            initial={{ x: -300, opacity: 0 }}
+            whileInView={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.8, duration: 0.6 }}
+          >
+            That's {(stats.yearComparison.thisYear.totalClimbs / stats.yearComparison.thisYear.climbingSessions).toFixed(1)} climbs per session!
+          </ComparisonStat>
+        </motion.div>
+      </FullscreenSection>
+
+      {/* Top Areas Breakdown */}
+      <FullscreenSection
+        gradient="linear-gradient(135deg, #1a1a1a 0%, #2d1f3d 100%)"
+      >
+        <Title>Your Crag Tour</Title>
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+        >
+          {stats.yearComparison.thisYear.topAreas.map(({area, count}, index) => (
+            <AnimatedStat
+              key={area}
+              variants={statVariants}
+              custom={index}
+            >
+              <Emphasis>{area}</Emphasis>
+              <br />
+              <small>{count} visits</small>
+              {index === 0 && <div>👑 Your home crag!</div>}
+            </AnimatedStat>
+          ))}
+          
+          <Tagline>
+            You explored {stats.yearComparison.thisYear.uniqueRoutes} unique routes across these areas!
+          </Tagline>
+        </motion.div>
+      </FullscreenSection>
     </Container>
   );
-}
-
-// Helper function to generate personality description
-function generatePersonalityDescription(stats) {
-  const style = stats.styles.lead > stats.styles.tr ? 'lead' : 'top rope';
-  const intensity = stats.averages.climbsPerSession > 5 ? 'high-volume crusher' : 'precision climber';
-  const timing = Object.entries(stats.progression.timeOfDay)
-    .reduce((a, b) => a[1] > b[1] ? a : b)[0];
-
-  return `You're a ${timing} ${style} specialist and ${intensity}. 
-          ${stats.yearComparison.changes.gradeChange > 0 
-            ? "Your dedication to progression is paying off!" 
-            : "You're building a solid foundation!"}`;
 }
 
 export default ClimbingWrapped;

@@ -131,6 +131,16 @@ export const processClimbingData = async (csvUrl) => {
         // Helper to calculate stats for a given year's rows
         const calculateYearStats = (rows) => ({
           totalClimbs: rows.length,
+          uniqueRoutes: new Set(rows.map(row => row.Route)).size,
+          climbingSessions: new Set(rows.map(row => row.Date)).size,
+          topAreas: getTopAreas(rows, 5), // Get top 5 areas
+          sendTypes: {
+            onsight: rows.filter(r => r['Lead Style'] === 'Onsight').length,
+            flash: rows.filter(r => r['Lead Style'] === 'Flash').length,
+            redpoint: rows.filter(r => r['Lead Style'] === 'Redpoint').length,
+            topRope: rows.filter(r => r.Style === 'TR').length,
+            follow: rows.filter(r => r.Style === 'Follow').length,
+          },
           uniqueAreas: new Set(rows.map(row => row.Location?.split(' > ')[1] || '')).size,
           totalPitches: rows.reduce((sum, row) => sum + (parseInt(row.Pitches) || 0), 0),
           totalLength: rows.reduce((sum, row) => sum + (parseInt(row.Length) || 0), 0),
@@ -533,4 +543,20 @@ function findMostFrequentLocation(rows) {
   
   return Object.entries(locations)
     .reduce((a, b) => a[1] > b[1] ? a : b)[0];
+}
+
+// Helper to get top climbing areas with visit counts
+function getTopAreas(rows, limit = 5) {
+  const areaCount = rows.reduce((acc, row) => {
+    // Split location and get area (typically the second part)
+    const areas = row.Location?.split(' > ') || [];
+    const area = areas[1] || 'Unknown'; // Usually the region/area is second part
+    acc[area] = (acc[area] || 0) + 1;
+    return acc;
+  }, {});
+  
+  return Object.entries(areaCount)
+    .sort(([,a], [,b]) => b - a)
+    .slice(0, limit)
+    .map(([area, count]) => ({ area, count }));
 }
